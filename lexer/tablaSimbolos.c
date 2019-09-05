@@ -23,20 +23,20 @@ void initTabla() {
 
     tabla = (entrada*) malloc(tamTabla * sizeof(entrada));
     for(i = 0; i < tamTabla; i++) {
-        tabla[i].compLex=-1;
+        strcpy(tabla[i].compLex, "-1");
     }
 }
 
 int esprimo(int n) {
     int i;
-    for(i=3; i*i <= n ; i += 2)
-            if (n%i==0)
-                    return 0;
+    for(i=3; i*i <= n; i += 2)
+        if (n%i == 0)
+            return 0;
     return 1;
 }
 
 int siguiente_primo(int n) {
-    if (n%2==0)
+    if (n%2 == 0)
         n++;
     for (; !esprimo(n); n += 2);
 
@@ -51,7 +51,7 @@ void rehash() {
     tamTabla=siguiente_primo(2*tamTabla);
     initTabla();
     for (i=0; i < tamTabla/2; i++) {
-        if(vieja[i].compLex!=-1)
+        if(vieja[i].compLex != "-1")
             insertar(vieja[i]);
     }
     free(vieja);
@@ -63,19 +63,19 @@ void insertar(entrada e) {
     if (++elems >= tamTabla/2)
         rehash();
     pos = h(e.lexema, tamTabla);
-    while (tabla[pos].compLex != -1) {
+    while (tabla[pos].compLex != "-1") {
         pos++;
         if (pos == tamTabla)
             pos = 0;
     }
-    tabla[pos]=e;
+    tabla[pos] = e;
 }
 
 //busca una clave en la tabla, si no existe devuelve NULL, posicion en caso contrario
 entrada* buscar(const char *clave) {
     int pos;
-    pos=h(clave,tamTabla);
-    while(tabla[pos].compLex!=-1 && strcmp(tabla[pos].lexema,clave)!=0 ) {
+    pos = h(clave,tamTabla);
+    while(tabla[pos].compLex != "-1" && strcmp(tabla[pos].lexema, clave) != 0) {
         pos++;
         if (pos==tamTabla)
             pos=0;
@@ -87,75 +87,19 @@ void insertTablaSimbolos(const char *s, char *n) {
     entrada e;
     strcpy(e.lexema, s);
     // sprintf(e.lexema,s);
-    e.compLex = n;
+    strcpy(e.compLex, n);
     insertar(e);
 }
 
 void initTablaSimbolos() {
-//    int i;
-//    const char *vector[]={
-//        "program",
-//        "type",
-//        "var",
-//        "array",
-//        "begin",
-//        "end",
-//        "do",
-//        "to",
-//        "downto",
-//        "then",
-//        "of",
-//        "function",
-//        "procedure", 
-//        "integer", 
-//        "real", 
-//        "boolean", 
-//        "char", 
-//        "for", 
-//        "if", 
-//        "else", 
-//        "while", 
-//        "repeat", 
-//        "until", 
-//        "case", 
-//        "record", 
-//        "writeln",
-//        "write",
-//        "const"
-//    };
-//    for (i = 0; i<28; i++) {
-//        insertTablaSimbolos(vector[i], i+256);
-//    }
-
-    insertTablaSimbolos("[", 'L_CORCHETE');
-    insertTablaSimbolos("]", 'R_CORCHETE');
-    insertTablaSimbolos("{", 'L_LLAVE');
-    insertTablaSimbolos("}", 'R_LLAVE');
-    insertTablaSimbolos(",", 'COMA');
-    insertTablaSimbolos(":", 'DOS_PUNTOS');
-    insertTablaSimbolos("true", 'PR_TRUE');
-    insertTablaSimbolos("false", 'PR_FALSE');
-    insertTablaSimbolos("null", 'PR_NULL');
-    insertTablaSimbolos("eof", 'EOF');
-    /*
-    insertTablaSimbolos(".",'.');
-    insertTablaSimbolos(";",';');
-    insertTablaSimbolos("(",'(');
-    insertTablaSimbolos(")",')');
-    insertTablaSimbolos("not",NOT);
-    insertTablaSimbolos("<",OPREL);
-    insertTablaSimbolos("<=",OPREL);
-    insertTablaSimbolos("<>",OPREL);
-    insertTablaSimbolos(">",OPREL);
-    insertTablaSimbolos(">=",OPREL);
-    insertTablaSimbolos("=",OPREL);
-    insertTablaSimbolos("+",OPSUMA);
-    insertTablaSimbolos("-",OPSUMA);
-    insertTablaSimbolos("or",OPSUMA);
-    insertTablaSimbolos("*",OPMULT);
-    insertTablaSimbolos("/",OPMULT);
-    insertTablaSimbolos("div",OPMULT);
-    insertTablaSimbolos("mod",OPMULT);
-    insertTablaSimbolos(":=",OPASIGNA);
-    */
+    insertTablaSimbolos("[", "L_CORCHETE");
+    insertTablaSimbolos("]", "R_CORCHETE");
+    insertTablaSimbolos("{", "L_LLAVE");
+    insertTablaSimbolos("}", "R_LLAVE");
+    insertTablaSimbolos(",", "COMA");
+    insertTablaSimbolos(":", "DOS_PUNTOS");
+    insertTablaSimbolos("true", "PR_TRUE");
+    insertTablaSimbolos("false", "PR_FALSE");
+    insertTablaSimbolos("null", "PR_NULL");
+    insertTablaSimbolos("eof", "EOF");
 }
