@@ -7,7 +7,16 @@
 /************* Definiciones ********************/
 
 //Codigos
-#define WRITELN		281
+#define CORCHETEI   "L_CORCHETE"
+#define CORCHETED   "R_CORCHETE"
+#define LLAVEI   "L_LLAVE"
+#define LLAVED   "R_LLAVE"
+#define COMA   "COMA"
+#define PUNTOS   "DOS_PUNTOS"
+#define TRUE    "PR_TRUE"
+#define FALSE   "PR_FALSE"
+//#define NULL    PR_NULL
+//#define EOF     EOF
 // Fin Codigos
 #define TAMBUFF 	5
 #define TAMLEX 		50

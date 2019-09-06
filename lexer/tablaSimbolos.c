@@ -6,15 +6,17 @@ int tamTabla = TAMHASH;	//utilizado para cuando se debe hacer rehash
 int elems = 0;		//utilizado para cuando se debe hacer rehash
 
 int h(const char* k, int m) {
-    unsigned h=0,g;
+    unsigned h = 0, g;
     int i;
     for (i = 0; i < strlen(k); i++) {
+        //printf("i = %d \t %d\n", i, k[i]);
         h = (h << 4) + k[i];
-        if((g = h&0xf0000000) ){
+        if((g = h&0xf0000000)){
             h = h^(g>>24);
             h = h^g;
         }
     }
+    //printf("\n\n\n%d", h%m);
     return h%m;
 }
 
@@ -23,7 +25,7 @@ void initTabla() {
 
     tabla = (entrada*) malloc(tamTabla * sizeof(entrada));
     for(i = 0; i < tamTabla; i++) {
-        strcpy(tabla[i].compLex, "-1");
+        strcpy(tabla[i].compLex, "z");
     }
 }
 
@@ -63,7 +65,7 @@ void insertar(entrada e) {
     if (++elems >= tamTabla/2)
         rehash();
     pos = h(e.lexema, tamTabla);
-    while (tabla[pos].compLex != "-1") {
+    while (strcmp(tabla[pos].compLex, "z") != 0) {
         pos++;
         if (pos == tamTabla)
             pos = 0;
@@ -74,8 +76,8 @@ void insertar(entrada e) {
 //busca una clave en la tabla, si no existe devuelve NULL, posicion en caso contrario
 entrada* buscar(const char *clave) {
     int pos;
-    pos = h(clave,tamTabla);
-    while(tabla[pos].compLex != "-1" && strcmp(tabla[pos].lexema, clave) != 0) {
+    pos = h(clave, tamTabla);
+    while(strcmp(tabla[pos].compLex, "z") != 0 && strcmp(tabla[pos].lexema, clave) != 0) {
         pos++;
         if (pos==tamTabla)
             pos=0;
@@ -92,14 +94,15 @@ void insertTablaSimbolos(const char *s, char *n) {
 }
 
 void initTablaSimbolos() {
-    insertTablaSimbolos("[", "L_CORCHETE");
-    insertTablaSimbolos("]", "R_CORCHETE");
-    insertTablaSimbolos("{", "L_LLAVE");
-    insertTablaSimbolos("}", "R_LLAVE");
-    insertTablaSimbolos(",", "COMA");
-    insertTablaSimbolos(":", "DOS_PUNTOS");
-    insertTablaSimbolos("true", "PR_TRUE");
-    insertTablaSimbolos("false", "PR_FALSE");
-    insertTablaSimbolos("null", "PR_NULL");
-    insertTablaSimbolos("eof", "EOF");
+//    insertTablaSimbolos("[", "L_CORCHETE");
+//    insertTablaSimbolos("]", "R_CORCHETE");
+//    insertTablaSimbolos("{", "L_LLAVE");
+//    insertTablaSimbolos("}", "R_LLAVE");
+//    insertTablaSimbolos(",", "COMA");
+    
+    insertTablaSimbolos("PUNTOS", "DOS_PUNTOS");
+    //    insertTablaSimbolos("true", "PR_TRUE");
+//    insertTablaSimbolos("false", "PR_FALSE");
+//    insertTablaSimbolos("null", "PR_NULL");
+//    insertTablaSimbolos("eof", "EOF");
 }

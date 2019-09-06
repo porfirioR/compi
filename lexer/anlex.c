@@ -22,7 +22,7 @@
 int consumir;		/* 1 indica al analizador lexico que debe devolver
 			el sgte componente lexico, 0 debe devolver el actual */
 
-char cad[5*TAMLEX];	// string utilizado para cargar mensajes de error
+char cad[5 * TAMLEX];	// string utilizado para cargar mensajes de error
 token t;		// token global para recibir componentes del Analizador Lexico
 
 // variables para el analizador lexico
@@ -36,8 +36,7 @@ int numLinea=1;			// Numero de Linea
 
 /**************** Funciones **********************/
 // Rutinas del analizador lexico
-void error(const char* mensaje)
-{
+void error(const char* mensaje) {
 	printf("Lin %d: Error Lexico. %s.\n",numLinea,mensaje);	
 }
 
@@ -236,8 +235,8 @@ void sigLex() {
 //        }
         else if (c==':') {
             //t.compLex = "DOS_PUNTOS";
-            strcpy(t.compLex, "DOS_PUNTOS");
-            t.pe = buscar(":");
+            strcpy(t.compLex, PUNTOS);
+            t.pe = buscar(PUNTOS);
             break;
         }
 //        else if (c=='+') {
@@ -267,13 +266,14 @@ void sigLex() {
 //        }
         else if (c==',') {
             strcpy(t.compLex, "COMA");
+            
             //t.compLex="COMA";
             t.pe = buscar(",");
             break;
         }
         else if (c=='[') {
             strcpy(t.compLex, "L_CORCHETE");
-            t.pe=buscar("[");
+            t.pe = buscar("[");
             break;
         }
         else if (c==']') {
@@ -347,7 +347,7 @@ void sigLex() {
         strcpy(t.compLex, "EOF");
         //t.compLex = EOF;
         // strcpy(e.lexema,"EOF");
-        sprintf(e.lexema, "EOF");
+        //sprintf(e.lexema, "EOF");
         t.pe = &e;
     }
 }
@@ -362,11 +362,10 @@ int main(int argc,char* args[]) {
             printf("Archivo no encontrado.\n");
             exit(1);
         }
-        printf("Archivo encontrado.\n");
-//        while (t.compLex != "EOF") {
-//            sigLex();
-//            printf("%s %s\n", t.pe->lexema, t.compLex);
-//        }
+        while (strcmp(t.compLex, "EOF") != 0) {
+            sigLex();
+            printf("%s ", t.compLex);
+        }
         fclose(archivo);
     } else {
         printf("Debe pasar como parametro el path al archivo fuente.\n");
