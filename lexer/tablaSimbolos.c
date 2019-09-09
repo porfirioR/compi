@@ -50,7 +50,7 @@ void rehash() {
     entrada *vieja;
     int i;
     vieja = tabla;
-    tamTabla=siguiente_primo(2*tamTabla);
+    tamTabla = siguiente_primo(2*tamTabla);
     initTabla();
     for (i=0; i < tamTabla/2; i++) {
         if(vieja[i].compLex != "-1")
@@ -94,15 +94,16 @@ void insertTablaSimbolos(const char *s, char *n) {
 }
 
 void initTablaSimbolos() {
-//    insertTablaSimbolos("[", "L_CORCHETE");
-//    insertTablaSimbolos("]", "R_CORCHETE");
-//    insertTablaSimbolos("{", "L_LLAVE");
-//    insertTablaSimbolos("}", "R_LLAVE");
-//    insertTablaSimbolos(",", "COMA");
-    
-    insertTablaSimbolos("PUNTOS", "DOS_PUNTOS");
-    //    insertTablaSimbolos("true", "PR_TRUE");
-//    insertTablaSimbolos("false", "PR_FALSE");
-//    insertTablaSimbolos("null", "PR_NULL");
-//    insertTablaSimbolos("eof", "EOF");
+    insertTablaSimbolos("[", "L_CORCHETE");
+    insertTablaSimbolos("]", "R_CORCHETE");
+    insertTablaSimbolos("{", "L_LLAVE");
+    insertTablaSimbolos("}", "R_LLAVE");
+    insertTablaSimbolos(",", "COMA");
+    insertTablaSimbolos(":", "DOS_PUNTOS");
+    insertTablaSimbolos("true", "PR_TRUE");
+    insertTablaSimbolos("false", "PR_FALSE");
+    insertTablaSimbolos("null", "PR_NULL");
+    insertTablaSimbolos("string", "LITERAL_CADENA");
+    insertTablaSimbolos("error", "ERROR_LEXICO");
+    insertTablaSimbolos("number", "LITERAL_NUM");
 }
