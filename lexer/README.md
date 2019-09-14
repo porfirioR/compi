@@ -6,8 +6,6 @@ Compiladores FPUNA
 
 Para compilar: gcc anlex.c tablaSimbolos.c -o lexer
 
-Para correr: lexer.exe fuente
+Para correr: lexer.exe fuente.txt
 
-Con muestra de errores: lexer.exe prueba
-
-
+Con muestra de errores: lexer.exe prueba.txt
