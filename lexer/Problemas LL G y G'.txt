@@ -1,0 +1,96 @@
+G = 
+json => element eof
+element => object | array
+array => [element-list] | []
+element-list => element-list , element | element
+object => {attributes-list} | {}
+attributes-list => attribute-list , attribute | attribute
+attribute => attribute-name : attribute-value
+attribute-name => string
+attribute-value => element | string | number | true | false | null
+
+---------------------------------------------------
+Problemas LL
+1- Recursion por izquierda(General)
+	a) element-list => element-list , element | element
+										alfa		beta
+	element-list => beta e'
+	e' => alfa e' | E
+
+	a) element-list => element e'
+	b) e' 			=> , element e' | E
+
+2- K simbolos(factor p/ izquierda)
+	a) array 	=> [element-list] | []
+					alfa B		  | alfa y
+	array		=> alfa a'
+	a'			=> B | y
+
+	a) array	=> [ a'
+	b) a'		=> element-list] | ]
+
+3- K simbolos(factor p/ izquierda)
+	a) object 	=> {attributes-list} | {}
+					alfa B		  	 | alfa y
+
+	object		=> alfa o'
+	o'			=> B | y
+
+	a) object	=> { o'
+	b) o'		=> attribute-list} 	 | }
+
+4- Recursion por izquierda(General)
+	a) attributes-list 	=> attribute-list , attribute | attribute
+											alfa		beta
+	attributes-list 	=> attribute l'
+	l' 					=> alfa l' | E
+
+	a) attributes-list 	=> attribute l'
+	b) l' 				=> , attribute l' | E
+	
+---------------------------------------------------
+G' =
+json => element eof
+element 		=> object 			| array
+array			=> [ a'
+a'				=> element-list] 	| ]
+element-list 	=> element e'
+e' 				=> , element e' 	| E
+object			=> { o'
+o'				=> attribute-list}	| }
+attributes-list => attribute l'
+l' 				=> , attribute 		| E
+attribute 		=> attribute-name : attribute-value
+attribute-name 	=> string
+attribute-value => element | string | number | true | false | null
+
+
+
+
+
+
+
+Recursion por izquierda(no general)(esta mal pero sirve de ejemplo
+	a) array 			=> [element-list] | []
+	b) element-list 	=> element-list , element | element
+	c) element	 		=> object | array
+
+reemplazamos a) en c)
+	d) element	 		=> object | [element-list] | []
+reemplazamos c) por d)
+	a) array 			=> [element-list] | []
+	b) element-list 	=> element-list , element | element
+	d) element	 		=> object | [element-list] | []
+ordenamos d), cambiamos de lugar a) con b)
+	b) element-list 	=> element-list , element | element
+	a) array 			=> [element-list] | []
+	d) element	 		=> [element-list] | object |  []
+agregramos en d) e' en cada opcion ademas de quitar el que es igual al de arriba,
+se agrega e) que tiene igual a el que se quito en d) y se llama e'
+	b) element-list 	=> element-list , element | element
+	a) array 			=> [element-list] | []
+	d) element	 		=> object e' |  [] e'
+	e) e' 				=> [element-list] e' | E
+
+
+
