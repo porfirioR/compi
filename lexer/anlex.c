@@ -331,6 +331,7 @@ int main(int argc,char* args[]) {
 
             impCompLex = 's';
         }
+        inicio_anasintactico();
         fclose(archivo);
     } else {
         printf("Debe pasar como parametro el path al archivo fuente.\n");

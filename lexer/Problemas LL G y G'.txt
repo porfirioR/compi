@@ -50,7 +50,7 @@ Problemas LL
 	
 ---------------------------------------------------
 G' =
-json => element eof
+json 			=> element eof
 element 		=> object 			| array
 array			=> [ a'
 a'				=> element-list] 	| ]
