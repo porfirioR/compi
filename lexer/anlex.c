@@ -1,10 +1,10 @@
 /*
- *	Analizador Léxico	
+ *	Analizador Lï¿½xico	
  *	Curso: Compiladores y Lenguajes de Bajo de Nivel
  *	Tarea Nro. 1
  *	
  *	Descripcion:
- *	Implementa un analizador léxico que reconoce la estructura JSON que
+ *	Implementa un analizador lï¿½xico que reconoce la estructura JSON que
  *      incluye numeros, string, corchetes, llaves, comas, dos puntos, true,
  *      false, null y eof para fin del archivo.
  * 
@@ -12,7 +12,7 @@
  *      Porfirio Ramon Perez Gonzalez.
  */
 
-/*********** Inclusión de cabecera **************/
+/*********** Inclusiï¿½n de cabecera **************/
 #include "anlex.h"
 
 /************* Variables globales **************/
@@ -51,7 +51,7 @@ void sigLex() {
                 c = fgetc(archivo);
                 i++;
                 if (i >= TAMLEX) {
-                    error("Longitud del String excede tamaño de buffer");
+                    error("Longitud del String excede tamaï¿½o de buffer");
                     exit(1);
                 }
             } while(isalpha(c) || isdigit(c) || c != '\"');
@@ -78,7 +78,7 @@ void sigLex() {
                     if(c == identificador[j]) {
                         i++;
                         if (i >= TAMLEX) {
-                            error("Longitud del String excede tamaño de buffer");
+                            error("Longitud del String excede tamaï¿½o de buffer");
                             exit(1);
                         }
                     } else {
@@ -109,7 +109,7 @@ void sigLex() {
                     if(c == identificador[j]) {
                         i++;
                         if (i >= TAMLEX) {
-                            error("Longitud del String excede tamaño de buffer");
+                            error("Longitud del String excede tamaï¿½o de buffer");
                             exit(1);
                         }
                     } else {
@@ -139,7 +139,7 @@ void sigLex() {
                     if(c == identificador[j]) {
                         i++;
                         if (i >= TAMLEX) {
-                            error("Longitud del String excede tamaño de buffer");
+                            error("Longitud del String excede tamaï¿½o de buffer");
                             exit(1);
                         }
                     } else {
