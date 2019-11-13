@@ -1,25 +1,28 @@
 #include "anlex.h"
+
+FILE *archivo;          // Fuente json
+
 token t;
-char msg[41]; // Mensaje de error.
-short error_flag = 0;
+char msg[41];           // Mensaje de error.
+short entro_error = 0;
 
 void inicio_anasintactico() {
     json();
-    if (t.compLex != EOF)
+    if (strcmp(t.compLex, "EOF") != 0)
         error_msg("No se esperaba fin del archivo.");
 }
 
 void json() {
     element();
-    match(EOF);
+    match("EOF");
 }
 
 void element() {
-    if(t.compLex == 'L_LLAVE')
+    if(strcmp(t.compLex, "L_LLAVE") != 0)
         object();
-    else if(t.compLex == 'L_CORCHETE')
+    else if(strcmp(t.compLex, "L_CORCHETE") != 0)
         array();
-    else if (t.compLex == 'R_CORCHETE' || t.compLex == 'R_LLAVE' || t.compLex == 'COMA') {
+    else if (strcmp(t.compLex, "R_CORCHETE") == 0 || strcmp(t.compLex, "R_LLAVE") == 0 || strcmp(t.compLex, "COMA") == 0 ) {
         sprintf(msg, "Se esperaba un \"{\" o \"[\" no \"%s\"", t.pe->lexema);
         error_msg(msg);
     } else
@@ -27,18 +30,19 @@ void element() {
 }
 
 void array() {
-    if('L_CORCHETE') {
+    if(strcmp(t.compLex, "L_CORCHETE") == 0) {
         match("[");
         aPrima();
     } else
-        error();
+        sprintf(msg,"Se esperaba un \"[\" no \"%s\"", t.pe->lexema);
+        error_msg(msg);
 }
 
 void aPrima() {
-    if(t.compLex != 'R_CORCHETE') {
+    if(t.compLex != "R_CORCHETE") {
         element_list();
         match("R_CORCHETE");
-    } else if(t.compLex == 'R_CORCHETE') {
+    } else if(strcmp(t.compLex, "R_CORCHETE") == 0) {
         match("R_CORCHETE");
     } else {
         sprintf(msg,"Se esperaba un \"[\" o \"]\" o \"{\" no \"%s\"", t.pe->lexema);
@@ -47,7 +51,7 @@ void aPrima() {
 }
 
 void element_list() {
-    if (t.compLex == 'L_CORCHETE' || t.compLex == 'L_LLAVE') {
+    if (strcmp(t.compLex, "L_CORCHETE") == 0 || strcmp(t.compLex, "L_LLAVE") == 0) {
         element();
         ePrima();
     } else {
@@ -57,7 +61,7 @@ void element_list() {
 }
 
 void ePrima() {
-    if(t.compLex == 'COMA') {
+    if(strcmp(t.compLex, "COMA") == 0) {
         match("COMA");
         element();
         ePrima();
@@ -67,16 +71,16 @@ void ePrima() {
 }
 
 void object() {
-    match('L_LLAVE');
+    match("L_LLAVE");
     oPrima();
 }
 
 void oPrima() {
-    if(t.compLex == 'R_LLAVE')
-        match('R_LLAVE');
+    if(strcmp(t.compLex, "R_LLAVE") == 0)
+        match("R_LLAVE");
     else {
         attribute_list();
-        match('R_LLAVE');
+        match("R_LLAVE");
     }
 }
 
@@ -86,20 +90,19 @@ void attribute_list() {
 }
 
 void lPrima() {
-    //,
-    match(',');
+    match(",");
     attribute();
 }
 
 void attribute() {
     attribute_name();
-    match('DOS_PUNTOS');
+    match("DOS_PUNTOS");
     attribute_value();
 }
 
 void attribute_name() {
-    if(t.compLex == 'LITERAL_CADENA') {
-        match('string');
+    if(strcmp(t.compLex, "LITERAL_CADENA") == 0) {
+        match("string");
     } else {
         sprintf(msg,"Se esperaba una \"Cadena literal\", no \"%s\"", t.pe->lexema);
         error_msg(msg);
@@ -107,19 +110,19 @@ void attribute_name() {
 }
 
 void attribute_value() {
-    if (t.compLex == 'L_CORCHETE' || t.compLex == 'L_LLAVE') {
+    if (strcmp(t.compLex, "L_CORCHETE") == 0 || strcmp(t.compLex, "L_LLAVE") == 0) {
         element();
-    } else if(t.compLex == 'LITERAL_CADENA') {
-        match('LITERAL_CADENA');
-    } else if(t.compLex == 'LITERAL_NUM') {
-        match('LITERAL_NUM');
-    } else if(t.compLex == 'PR_TRUE') {
-        match('PR_TRUE');
-    } else if(t.compLex == 'PR_FALSE') {
-        match('PR_FALSE');
-    } else if(t.compLex == 'PR_NULL') {
-        match('PR_NULL');
-    } else if (t.compLex == 'R_LLAVE' || t.compLex == 'COMA' || t.compLex == 'DOS_PUNTOS') {
+    } else if(strcmp(t.compLex, "LITERAL_CADENA") == 0) {
+        match("LITERAL_CADENA");
+    } else if(strcmp(t.compLex, "LITERAL_NUM") == 0) {
+        match("LITERAL_NUM");
+    } else if(strcmp(t.compLex, "PR_TRUE") == 0) {
+        match("PR_TRUE");
+    } else if(strcmp(t.compLex, "PR_FALSE") == 0) {
+        match("PR_FALSE");
+    } else if(strcmp(t.compLex,  "PR_NULL") == 0) {
+        match("PR_NULL");
+    } else if (strcmp(t.compLex, "R_LLAVE") == 0 || strcmp(t.compLex, "COMA") == 0 || strcmp(t.compLex, "DOS_PUNTOS") == 0) {
         sprintf(msg,"Se esperaba un \"{\" o \"[\" o \"string\" o \"number\" o \"true\" o \"false\" o \"null\" no \"%s\"", t.pe->lexema);
         error_msg(msg);
     } else {
@@ -127,8 +130,8 @@ void attribute_value() {
     }
 }
 
-void match(int n) {
-	if(t.compLex == n)
+void match(char* n) {
+	if(strcmp(t.compLex, n) == 0)
         getToken();
 	else
         error_msg("Error en el match");
@@ -139,6 +142,41 @@ void getToken(void) {
 }
 
 void error_msg(char* mensaje) {
-    error_flag = 1;
-    printf("Lin %d: Error Sintáctico. %s.\n", linea(), mensaje);	
+    entro_error = 1;
+    printf("Error Sintáctico. %s.\n", mensaje);	
+}
+
+void parser() {
+    while (strcmp(t.compLex, "EOF") != 0) {
+        getToken();
+        inicio_anasintactico();
+    }
+}
+
+int main(int argc,char* args[]) {
+    // inicializar analizador lexico
+    initTabla();
+    initTablaSimbolos();
+
+    if(argc > 1) {
+        if (!(archivo = fopen(args[1], "rt"))) {
+            printf("Archivo no encontrado.\n");
+            exit(1);
+        }
+        while (strcmp(t.compLex, "EOF") != 0) {
+            sigLex();
+            if (entro_error == 0)
+                printf("%s\n", t.compLex);
+        }
+        if (entro_error == 0)
+                printf("Sintácticamente correcto.\n");
+
+        fclose(archivo);
+    } else {
+        printf("Debe pasar como parametro el path al archivo fuente.\n");
+        exit(1);
+    }
+
+    return 0;
+
 }

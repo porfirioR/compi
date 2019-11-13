@@ -33,5 +33,22 @@ entrada* buscar(const char *clave);
 void initTabla();
 void initTablaSimbolos();
 void sigLex();
-/**Parser*/
+
+//parser
+void json();
+void element();
+void array();
+void aPrima();
+void element_list();
+void ePrima();
+void object();
+void oPrima();
+void attribute_list();
+void lPrima();
+void attribute();
+void attribute_name();
+void attribute_value();
+void match(char* n);
+void error_msg(char* mensaje);
 void inicio_anasintactico();
+void getToken(void);

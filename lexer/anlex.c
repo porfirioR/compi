@@ -25,7 +25,7 @@ token t;		// token global para recibir componentes del Analizador Lexico
 
 // variables para el analizador lexico
 
-FILE *archivo;			// Fuente pascal
+FILE *archivo;			// Fuente json
 char buff[2*TAMBUFF];           // Buffer para lectura de archivo fuente
 char id[TAMLEX];		// Utilizado por el analizador lexico
 int delantero =-1;		// Utilizado por el analizador lexico
@@ -313,7 +313,7 @@ void sigLex() {
         t.pe = &e;
     }
 }
-
+/*
 int main(int argc,char* args[]) {
     // inicializar analizador lexico
     initTabla();
@@ -331,7 +331,6 @@ int main(int argc,char* args[]) {
 
             impCompLex = 's';
         }
-        inicio_anasintactico();
         fclose(archivo);
     } else {
         printf("Debe pasar como parametro el path al archivo fuente.\n");
@@ -339,4 +338,6 @@ int main(int argc,char* args[]) {
     }
 
     return 0;
+
 }
+*/
