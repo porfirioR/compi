@@ -8,8 +8,10 @@ short entro_error = 0;
 
 void inicio_anasintactico() {
     json();
-    if (strcmp(t.compLex, "EOF") != 0)
+    if (strcmp(t.compLex, "EOF") != 0) {
         error_msg("No se esperaba fin del archivo.");
+        exit(1);
+    }
 }
 
 void json() {
@@ -18,34 +20,36 @@ void json() {
 }
 
 void element() {
-    if(strcmp(t.compLex, "L_LLAVE") != 0)
+    if(strcmp(t.compLex, "L_LLAVE") == 0)
         object();
-    else if(strcmp(t.compLex, "L_CORCHETE") != 0)
+    else if(strcmp(t.compLex, "L_CORCHETE") == 0) {
         array();
-    else if (strcmp(t.compLex, "R_CORCHETE") == 0 || strcmp(t.compLex, "R_LLAVE") == 0 || strcmp(t.compLex, "COMA") == 0 ) {
-        sprintf(msg, "Se esperaba un \"{\" o \"[\" no \"%s\"", t.pe->lexema);
+    } else {
+        sprintf(msg,"Se esperaba un \"[\" o \"{\" no \"%s\"", t.pe->lexema);
         error_msg(msg);
-    } else
         getToken();
+    }
 }
 
 void array() {
     if(strcmp(t.compLex, "L_CORCHETE") == 0) {
-        match("[");
+        match("L_CORCHETE");
         aPrima();
-    } else
+    } else {
         sprintf(msg,"Se esperaba un \"[\" no \"%s\"", t.pe->lexema);
         error_msg(msg);
+    }
 }
 
 void aPrima() {
-    if(t.compLex != "R_CORCHETE") {
+    //printf("\nLlego a': %s\n", t.compLex);
+    if(strcmp(t.compLex, "R_CORCHETE") != 0) {
         element_list();
         match("R_CORCHETE");
     } else if(strcmp(t.compLex, "R_CORCHETE") == 0) {
         match("R_CORCHETE");
     } else {
-        sprintf(msg,"Se esperaba un \"[\" o \"]\" o \"{\" no \"%s\"", t.pe->lexema);
+        sprintf(msg,"Se esperaba un \"[\" o \"]\" no \"%s\"", t.pe->lexema);
         error_msg(msg);
     }
 }
@@ -65,8 +69,6 @@ void ePrima() {
         match("COMA");
         element();
         ePrima();
-    } else {
-        getToken();
     }
 }
 
@@ -76,11 +78,14 @@ void object() {
 }
 
 void oPrima() {
-    if(strcmp(t.compLex, "R_LLAVE") == 0)
-        match("R_LLAVE");
-    else {
+    if(strcmp(t.compLex, "R_LLAVE") != 0) {
         attribute_list();
         match("R_LLAVE");
+    } else if(strcmp(t.compLex, "R_LLAVE") == 0)
+        match("R_LLAVE");
+    else {
+        sprintf(msg,"Se esperaba una \"Cadena literal\" o un \"], no \"%s\"", t.pe->lexema);
+        error_msg(msg);
     }
 }
 
@@ -90,19 +95,24 @@ void attribute_list() {
 }
 
 void lPrima() {
-    match(",");
-    attribute();
+    if(strcmp(t.compLex, "COMA") == 0) {
+        match("COMA");
+        attribute();
+        lPrima();
+    }
 }
 
 void attribute() {
     attribute_name();
-    match("DOS_PUNTOS");
-    attribute_value();
+    if(strcmp(t.compLex, "DOS_PUNTOS") == 0) {//Manejador de error
+        match("DOS_PUNTOS");
+        attribute_value();
+    }
 }
 
 void attribute_name() {
     if(strcmp(t.compLex, "LITERAL_CADENA") == 0) {
-        match("string");
+        match("LITERAL_CADENA");
     } else {
         sprintf(msg,"Se esperaba una \"Cadena literal\", no \"%s\"", t.pe->lexema);
         error_msg(msg);
@@ -122,18 +132,20 @@ void attribute_value() {
         match("PR_FALSE");
     } else if(strcmp(t.compLex,  "PR_NULL") == 0) {
         match("PR_NULL");
-    } else if (strcmp(t.compLex, "R_LLAVE") == 0 || strcmp(t.compLex, "COMA") == 0 || strcmp(t.compLex, "DOS_PUNTOS") == 0) {
-        sprintf(msg,"Se esperaba un \"{\" o \"[\" o \"string\" o \"number\" o \"true\" o \"false\" o \"null\" no \"%s\"", t.pe->lexema);
-        error_msg(msg);
     } else {
         getToken();
     }
 }
 
 void match(char* n) {
-	if(strcmp(t.compLex, n) == 0)
+    //printf("\nLlego aca: %s,---Componente: %s\n", n, t.compLex);
+	if(strcmp(t.compLex, n) == 0) {
         getToken();
-	else
+//    else if(strcmp(t.compLex, "EOF") == 0 && strcmp(n, "EOF") != 0) {
+//        printf("No se esperaba fin del archivo.\n");
+//        entro_error = 1;
+        //exit(1);
+    } else
         error_msg("Error en el match");
 }
 
@@ -143,7 +155,7 @@ void getToken(void) {
 
 void error_msg(char* mensaje) {
     entro_error = 1;
-    printf("Error Sintáctico. %s.\n", mensaje);	
+    printf("Error Sintactico. %s.\n", mensaje);
 }
 
 void parser() {
@@ -164,12 +176,12 @@ int main(int argc,char* args[]) {
             exit(1);
         }
         while (strcmp(t.compLex, "EOF") != 0) {
-            sigLex();
+            parser();
             if (entro_error == 0)
                 printf("%s\n", t.compLex);
         }
         if (entro_error == 0)
-                printf("Sintácticamente correcto.\n");
+            printf("Sintacticamente correcto.\n");
 
         fclose(archivo);
     } else {

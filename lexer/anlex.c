@@ -51,7 +51,7 @@ void sigLex() {
                 c = fgetc(archivo);
                 i++;
                 if (i >= TAMLEX) {
-                    error("Longitud del String excede tama�o de buffer");
+                    error("Longitud del String excede tamaño de buffer");
                     exit(1);
                 }
             } while(isalpha(c) || isdigit(c) || c != '\"');
@@ -78,7 +78,7 @@ void sigLex() {
                     if(c == identificador[j]) {
                         i++;
                         if (i >= TAMLEX) {
-                            error("Longitud del String excede tama�o de buffer");
+                            error("Longitud del String excede tamaño de buffer");
                             exit(1);
                         }
                     } else {
@@ -109,7 +109,7 @@ void sigLex() {
                     if(c == identificador[j]) {
                         i++;
                         if (i >= TAMLEX) {
-                            error("Longitud del String excede tama�o de buffer");
+                            error("Longitud del String excede tamaño de buffer");
                             exit(1);
                         }
                     } else {
@@ -139,7 +139,7 @@ void sigLex() {
                     if(c == identificador[j]) {
                         i++;
                         if (i >= TAMLEX) {
-                            error("Longitud del String excede tama�o de buffer");
+                            error("Longitud del String excede tamaño de buffer");
                             exit(1);
                         }
                     } else {
@@ -271,7 +271,7 @@ void sigLex() {
             }
             break;
         }
-        else if (c==':') {
+        else if (c == ':') {
             strcpy(t.compLex, "DOS_PUNTOS");
             t.pe = buscar(":");
             break;
@@ -281,24 +281,24 @@ void sigLex() {
             t.pe = buscar(",");
             break;
         }
-        else if (c=='[') {
+        else if (c == '[') {
             strcpy(t.compLex, "L_CORCHETE");
             t.pe = buscar("[");
             break;
         }
-        else if (c==']') {
+        else if (c == ']') {
             strcpy(t.compLex, "R_CORCHETE");
             t.pe=buscar("]");
             break;
         }
-        else if (c=='{') {
+        else if (c == '{') {
             strcpy(t.compLex, "L_LLAVE");
             t.pe = buscar("{");
             break;
         }
-        else if (c=='}') {
+        else if (c == '}') {
             strcpy(t.compLex, "R_LLAVE");
-            t.pe = buscar("{");
+            t.pe = buscar("}");
             break;
         }
         else if (c != EOF) {
