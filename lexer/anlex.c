@@ -47,9 +47,11 @@ void sigLex() {
             continue;	//eliminar espacios en blanco
         } else if (c == '\"') {//ver si es un string
             i = 0;
+            id[i] = c;
             do {
                 c = fgetc(archivo);
-                i++;
+                id[++i] = c;
+                //printf("----%c\n", c);
                 if (i >= TAMLEX) {
                     error("Longitud del String excede tamaño de buffer");
                     exit(1);
@@ -60,8 +62,19 @@ void sigLex() {
             else
                 c = 0;
 
+            id[++i] = '\0';
+            //printf("----%s", id);
+            t.pe = buscar(id);
+            //printf("*%s*", t.pe->compLex);
             strcpy(t.compLex, "LITERAL_CADENA");
-            t.pe = buscar("string");
+			if (strcmp(t.pe->compLex, "z") == 0) {
+				strcpy(e.lexema, id);
+                strcpy(e.compLex, "LITERAL_CADENA");
+				insertar(e);
+				t.pe = buscar(id);
+                //printf("++++$%s$\n", t.pe->compLex);
+                strcpy(t.compLex, "LITERAL_CADENA");
+			}
             break;
         }
         else if (isalpha(c)) {
@@ -253,8 +266,16 @@ void sigLex() {
 
                         id[++i] = '\0';
                         acepto = 1;
+                        t.pe = buscar(id);
+                        //printf("%s", id);
+                        //printf("*************%s", t.pe->compLex);
+                        if ( strcmp(t.pe->compLex, "z") == 0) {
+								strcpy(e.lexema,id);
+								strcpy(e.compLex, "LITERAL_NUM");
+								insertar(e);
+								t.pe = buscar(id);
+							}
                         strcpy(t.compLex, "LITERAL_NUM");
-                        t.pe = buscar("number");
                         break;
                     case -1:
                         if (c == EOF) {

@@ -46,7 +46,7 @@ void oPrima();
 void attribute_list();
 void lPrima();
 void attribute();
-void attribute_name();
+char* attribute_name();
 void attribute_value();
 void match(char* n);
 void error_msg(char* mensaje);

@@ -79,8 +79,8 @@ entrada* buscar(const char *clave) {
     pos = h(clave, tamTabla);
     while(strcmp(tabla[pos].compLex, "z") != 0 && strcmp(tabla[pos].lexema, clave) != 0) {
         pos++;
-        if (pos==tamTabla)
-            pos=0;
+        if (pos == tamTabla)
+            pos = 0;
     }
     return &tabla[pos];
 }

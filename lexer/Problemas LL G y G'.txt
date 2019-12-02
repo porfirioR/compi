@@ -49,20 +49,20 @@ Problemas LL
 	b) l' 				=> , attribute l' | E
 	
 ---------------------------------------------------
-G' =
-json 			=> element eof
-element 		=> object 			| array
-array			=> [ a'
-a'				=> element-list] 	| ]
-element-list 	=> element e'
-e' 				=> , element e' 	| E
-object			=> { o'
-o'				=> attribute-list}	| }
-attributes-list => attribute l'
-l' 				=> , attribute l'	| E
-attribute 		=> attribute-name : attribute-value
-attribute-name 	=> string
-attribute-value => element | string | number | true | false | null
+G' =																T=
+json 			=> element eof										json.trad 				=> element eof
+element 		=> object 			| array							element.trad 			=> object 			| array
+array			=> [ a'												array.trad				=> [ a'
+a'				=> element-list] 	| ]								a'.trad					=> element-list] 	| ]
+element-list 	=> element e'										element-list.trad 		=> element e'
+e' 				=> , element e' 	| E								e'.trad 				=> , element e' 	| E
+object			=> { o'												object.trad				=> { o'
+o'				=> attribute-list}	| }								o'.trad					=> attribute-list}	| }
+attributes-list => attribute l'										attributes-list.trad 	=> attribute l'
+l' 				=> , attribute l'	| E								l'.trad 				=> , attribute l'	| E
+attribute 		=> attribute-name : attribute-value					attribute.trad 			=> attribute-name : attribute-value
+attribute-name 	=> string											attribute-name.trad 	=> string
+attribute-value => element | string | number | true | false | null	attribute-value.trad 	=> element | string | number | true | false | null
 
 
 
