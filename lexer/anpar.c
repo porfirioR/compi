@@ -7,18 +7,50 @@ char msg[41];           // Mensaje de error.
 char* atriName[1000][41];
 short entro_error = 0;
 int profundidad = 0;
-int posicionInterna = 0;
 char* tabulador = "";
-/*
-void tabular() {
-    for (int i = 0; i < profundidad + 1; i++) {
-        tabulador = strcpy(tabulador, "\t");
+
+// Función que concatena tabulaciones.
+char* tabular(int valor) {
+    switch (valor)
+    {
+    case 0:
+        tabulador = "";
+        break;
+    case 1:
+        tabulador = "\t";
+        break;
+    case 2:
+        tabulador = "\t\t";
+        break;
+    case 3:
+        tabulador = "\t\t\t";
+        break;
+    case 4:
+        tabulador = "\t\t\t\t";
+        break;
+    case 5:
+        tabulador = "\t\t\t\t\t";
+        break;
+    case 6:
+        tabulador = "\t\t\t\t\t\t";
+        break;
+    case 7:
+        tabulador = "\t\t\t\t\t\t\t";
+        break;
+    case 8:
+        tabulador = "\t\t\t\t\t\t\t\t";
+        break;
+    case 9:
+        tabulador = "\t\t\t\t\t\t\t\t\t";
+        break;
+    default:
+        tabulador = "\t\t\t\t\t\t\t\t\t\t";
+        break;
     }
-    
+    return tabulador;
 }
-*/
+
 void inicio_anasintactico() {
-    printf("%s", traducidoXML);
     json();
     if (strcmp(t.compLex, "EOF") != 0) {
         error_msg("No se esperaba fin del archivo.");
@@ -55,13 +87,11 @@ void array() {
 
 void aPrima() {
     if(strcmp(t.compLex, "R_CORCHETE") != 0) {
-        fprintf(traducidoXML, "\n<%s>\n", "item");
         element_list();
         match("R_CORCHETE");
-        fprintf(traducidoXML, "\t</item>\n");
+        //puede ser aca
     } else if(strcmp(t.compLex, "R_CORCHETE") == 0) {
         match("R_CORCHETE");
-        //fprintf(traducidoXML, "\t</item>\n");
     } else {
         sprintf(msg,"Se esperaba un \"[\" o \"]\" no \"%s\"", t.pe->lexema);
         error_msg(msg);
@@ -70,19 +100,22 @@ void aPrima() {
 
 void element_list() {
     if (strcmp(t.compLex, "L_CORCHETE") == 0 || strcmp(t.compLex, "L_LLAVE") == 0) {
+        fprintf(traducidoXML, "\n%s<item>\n", tabular(profundidad++));
         element();
         ePrima();
     } else {
-        //printf("error Aqui");
-        sprintf(msg,"**Se esperaba un \"[\" o \"{\" no \"%s\"", t.pe->lexema);
+        sprintf(msg,"Se esperaba un \"[\" o \"{\" no \"%s\"", t.pe->lexema);
         error_msg(msg);
     }
 }
 
 void ePrima() {
+    profundidad--;
+    fprintf(traducidoXML, "%s</item>\n", tabular(profundidad--));
     if(strcmp(t.compLex, "COMA") == 0) {
+        profundidad = profundidad + 1;
+        fprintf(traducidoXML, "%s<item>\n", tabular(profundidad++));
         match("COMA");
-        fprintf(traducidoXML, "\n");
         element();
         ePrima();
     }
@@ -97,9 +130,9 @@ void oPrima() {
     if(strcmp(t.compLex, "R_LLAVE") != 0) {
         attribute_list();
         match("R_LLAVE");
-    } else if(strcmp(t.compLex, "R_LLAVE") == 0)
+    } else if(strcmp(t.compLex, "R_LLAVE") == 0) {
         match("R_LLAVE");
-    else {
+    } else {
         sprintf(msg,"Se esperaba una \"Cadena literal\" o un \"], no \"%s\"", t.pe->lexema);
         error_msg(msg);
     }
@@ -123,19 +156,19 @@ void attribute() {
     if(strcmp(t.compLex, "DOS_PUNTOS") == 0) {//Manejador de error
         match("DOS_PUNTOS");
         attribute_value();
+        //este no tiene tabs
         fprintf(traducidoXML, "</%s>\n", nombre);
-        posicionInterna--;
+        --profundidad;
     }
 }
 
-char* attribute_name() { 
+char* attribute_name() {
     if(strcmp(t.compLex, "LITERAL_CADENA") == 0) {
         char* nombreAtributo = t.pe->lexema;
         nombreAtributo++;
         nombreAtributo[strlen(nombreAtributo)-1] = '\0';
-
-        posicionInterna++;
-        fprintf(traducidoXML, "<%s>", nombreAtributo);
+        fprintf(traducidoXML, "%s<%s>",tabular(profundidad), nombreAtributo);
+        profundidad++;
         match("LITERAL_CADENA");
         return nombreAtributo;
     } else {
@@ -154,17 +187,14 @@ void attribute_value() {
         fputs(t.pe->lexema, traducidoXML);
         match("LITERAL_NUM");
     } else if(strcmp(t.compLex, "PR_TRUE") == 0) {
-        //fputs("true", traducidoXML);
         fputs(t.pe->lexema, traducidoXML);
         match("PR_TRUE");
     } else if(strcmp(t.compLex, "PR_FALSE") == 0) {
         fputs(t.pe->lexema, traducidoXML);
         match("PR_FALSE");
-        //fputs("false", traducidoXML);
     } else if(strcmp(t.compLex, "PR_NULL") == 0) {
         fputs(t.pe->lexema, traducidoXML);
         match("PR_NULL");
-        //fputs("null", traducidoXML);
     } else {
         getToken();
     }
@@ -210,7 +240,6 @@ int main(int argc,char* args[]) {
         while (strcmp(t.compLex, "EOF") != 0) {
             traducidoXML = fopen( "outputXML.txt", "w" );
             parser();
-//            fprintf(traducidoXML, "%s\n", "Porfirio");
             if(traducidoXML == NULL) {
                 printf("%s", "Error al abrir el traducctor");
                 exit(1);
@@ -229,7 +258,5 @@ int main(int argc,char* args[]) {
         exit(1);
     }
     fclose(traducidoXML);
-
     return 0;
-
 }

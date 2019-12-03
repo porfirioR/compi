@@ -15,7 +15,13 @@
          "hijos":[  
             {  
                "nombre":"Jorge",
-               "edad":18
+               "edad":18,
+			   "sexo":[
+				{
+					"masculino":true,
+					"femenino":false
+				}
+				]
             },
             {  
                "nombre":"Valeria",
