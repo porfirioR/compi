@@ -1,0 +1,3 @@
+Se esperaba un "[" o "{" no ""hola""
+Se esperaba un "[" o "{" no "}"
+Se esperaba un "[" o "{" no "}"

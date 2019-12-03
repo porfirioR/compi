@@ -2,58 +2,80 @@
 
 FILE *archivo;          // Fuente json
 FILE *traducidoXML;
+FILE *errorSintactico;
 token t;
-char msg[41];           // Mensaje de error.
-char* atriName[1000][41];
+char msg[200];           // Mensaje de error.
 short entro_error = 0;
 int profundidad = 0;
 char* tabulador = "";
+int arrayIdentacion = 0;
 
 // Función que concatena tabulaciones.
 char* tabular(int valor) {
+    char* elementoTab = "";
     switch (valor)
     {
     case 0:
-        tabulador = "";
+        elementoTab = "";
         break;
     case 1:
-        tabulador = "\t";
+        elementoTab = "\t";
         break;
     case 2:
-        tabulador = "\t\t";
+        elementoTab = "\t\t";
         break;
     case 3:
-        tabulador = "\t\t\t";
+        elementoTab = "\t\t\t";
         break;
     case 4:
-        tabulador = "\t\t\t\t";
+        elementoTab = "\t\t\t\t";
         break;
     case 5:
-        tabulador = "\t\t\t\t\t";
+        elementoTab = "\t\t\t\t\t";
         break;
     case 6:
-        tabulador = "\t\t\t\t\t\t";
+        elementoTab = "\t\t\t\t\t\t";
         break;
     case 7:
-        tabulador = "\t\t\t\t\t\t\t";
+        elementoTab = "\t\t\t\t\t\t\t";
         break;
     case 8:
-        tabulador = "\t\t\t\t\t\t\t\t";
+        elementoTab = "\t\t\t\t\t\t\t\t";
         break;
     case 9:
-        tabulador = "\t\t\t\t\t\t\t\t\t";
+        elementoTab = "\t\t\t\t\t\t\t\t\t";
         break;
     default:
-        tabulador = "\t\t\t\t\t\t\t\t\t\t";
+        elementoTab = "\t\t\t\t\t\t\t\t\t\t";
         break;
     }
-    return tabulador;
+    return elementoTab;
+}
+
+void cerrarBorrarArchivo() {
+    fclose(traducidoXML);
+    fclose(errorSintactico);
+    if(entro_error != 0) {
+        traducidoXML = fopen( "outputXML.txt", "w" );
+        fclose(traducidoXML);
+        remove("outputXML.txt");
+    } else {
+        remove("error.txt");
+    }
 }
 
 void inicio_anasintactico() {
-    json();
+    if(strcmp(t.compLex, "L_LLAVE") == 0 || strcmp(t.compLex, "L_CORCHETE") == 0) {
+        json();
+    } else {
+        sprintf(msg, "Se esperaba un \"[\" o \"{\" no \"%s\"", t.pe->lexema);
+        fprintf(errorSintactico, "Se esperaba un \"[\" o \"{\" no \"%s\"", t.pe->lexema);
+    }
+
     if (strcmp(t.compLex, "EOF") != 0) {
         error_msg("No se esperaba fin del archivo.");
+        fprintf(errorSintactico, "No se esperaba fin del archivo.\n");
+        cerrarBorrarArchivo();
         exit(1);
     }
 }
@@ -64,12 +86,13 @@ void json() {
 }
 
 void element() {
-    if(strcmp(t.compLex, "L_LLAVE") == 0)
+    if(strcmp(t.compLex, "L_LLAVE") == 0) {
         object();
-    else if(strcmp(t.compLex, "L_CORCHETE") == 0) {
+    } else if(strcmp(t.compLex, "L_CORCHETE") == 0) {
         array();
     } else {
         sprintf(msg,"Se esperaba un \"[\" o \"{\" no \"%s\"", t.pe->lexema);
+        fprintf(errorSintactico, msg);
         error_msg(msg);
         getToken();
     }
@@ -81,6 +104,7 @@ void array() {
         aPrima();
     } else {
         sprintf(msg,"Se esperaba un \"[\" no \"%s\"", t.pe->lexema);
+        fprintf(errorSintactico, "%s\n", msg);
         error_msg(msg);
     }
 }
@@ -89,11 +113,13 @@ void aPrima() {
     if(strcmp(t.compLex, "R_CORCHETE") != 0) {
         element_list();
         match("R_CORCHETE");
-        //puede ser aca
+        arrayIdentacion++;
+        arrayIdentacion++;
     } else if(strcmp(t.compLex, "R_CORCHETE") == 0) {
         match("R_CORCHETE");
     } else {
         sprintf(msg,"Se esperaba un \"[\" o \"]\" no \"%s\"", t.pe->lexema);
+        fprintf(errorSintactico, "%s\n", msg);
         error_msg(msg);
     }
 }
@@ -105,13 +131,16 @@ void element_list() {
         ePrima();
     } else {
         sprintf(msg,"Se esperaba un \"[\" o \"{\" no \"%s\"", t.pe->lexema);
+        fprintf(errorSintactico, "%s\n", msg);
         error_msg(msg);
+        getToken();
     }
 }
 
 void ePrima() {
     profundidad--;
-    fprintf(traducidoXML, "%s</item>\n", tabular(profundidad--));
+    fprintf(traducidoXML, "%s</item>\n", tabular(profundidad));
+    profundidad--;
     if(strcmp(t.compLex, "COMA") == 0) {
         profundidad = profundidad + 1;
         fprintf(traducidoXML, "%s<item>\n", tabular(profundidad++));
@@ -129,12 +158,16 @@ void object() {
 void oPrima() {
     if(strcmp(t.compLex, "R_LLAVE") != 0) {
         attribute_list();
-        match("R_LLAVE");
-    } else if(strcmp(t.compLex, "R_LLAVE") == 0) {
+        //match("R_LLAVE");
+    }
+    if(strcmp(t.compLex, "R_LLAVE") == 0) {
         match("R_LLAVE");
     } else {
         sprintf(msg,"Se esperaba una \"Cadena literal\" o un \"], no \"%s\"", t.pe->lexema);
         error_msg(msg);
+        fprintf(errorSintactico, "%s\n", msg);
+        //prueba
+        getToken();
     }
 }
 
@@ -156,9 +189,13 @@ void attribute() {
     if(strcmp(t.compLex, "DOS_PUNTOS") == 0) {//Manejador de error
         match("DOS_PUNTOS");
         attribute_value();
-        //este no tiene tabs
-        fprintf(traducidoXML, "</%s>\n", nombre);
-        --profundidad;
+        if(arrayIdentacion <= 0) {
+            fprintf(traducidoXML, "</%s>\n", nombre);
+            --profundidad;
+        } else if(arrayIdentacion > 0) {
+            fprintf(traducidoXML, "%s</%s>\n", tabular(arrayIdentacion), nombre);
+            arrayIdentacion = arrayIdentacion - 4;
+        }
     }
 }
 
@@ -173,6 +210,7 @@ char* attribute_name() {
         return nombreAtributo;
     } else {
         sprintf(msg, "Se esperaba una \"Cadena literal\", no \"%s\"", t.pe->lexema);
+        fprintf(errorSintactico, "%s\n", msg);
         error_msg(msg);
     }
 }
@@ -196,19 +234,21 @@ void attribute_value() {
         fputs(t.pe->lexema, traducidoXML);
         match("PR_NULL");
     } else {
+        sprintf(msg, "Se esperaba una \"Cadena literal\",  \"{\", \"[\", \"true\", \"false\", \"null\", \"numero\" no: \"%s\"", t.pe->lexema);
+        fprintf(errorSintactico, "%s\n", msg);
+        error_msg(msg);
         getToken();
     }
 }
 
 void match(char* n) {
+    
 	if(strcmp(t.compLex, n) == 0) {
         getToken();
-//    else if(strcmp(t.compLex, "EOF") == 0 && strcmp(n, "EOF") != 0) {
-//        printf("No se esperaba fin del archivo.\n");
-//        entro_error = 1;
-        //exit(1);
-    } else
+    } else {
+        printf("intentando machear: %s con %s", t.compLex, n);
         error_msg("Error en el match");
+    }
 }
 
 void getToken(void) {
@@ -231,7 +271,6 @@ int main(int argc,char* args[]) {
     // inicializar analizador lexico
     initTabla();
     initTablaSimbolos();
-
     if(argc > 1) {
         if (!(archivo = fopen(args[1], "rt"))) {
             printf("Archivo no encontrado.\n");
@@ -239,24 +278,21 @@ int main(int argc,char* args[]) {
         }
         while (strcmp(t.compLex, "EOF") != 0) {
             traducidoXML = fopen( "outputXML.txt", "w" );
+            errorSintactico = fopen( "error.txt", "w" );
             parser();
-            if(traducidoXML == NULL) {
-                printf("%s", "Error al abrir el traducctor");
+            if(traducidoXML == NULL || errorSintactico == NULL) {
+                printf("%s", "Error al abrir el traducctor o registro de errores.");
                 exit(1);
             }
-            if (entro_error == 0)
-                printf("%s\n", t.compLex);
-
         }
-        if (entro_error == 0)
+        if (entro_error == 0) {
             printf("Sintacticamente correcto.\n");
-
+        }
+        cerrarBorrarArchivo();
         fclose(archivo);
-        fclose(traducidoXML);
     } else {
         printf("Debe pasar como parametro el path al archivo fuente.\n");
         exit(1);
     }
-    fclose(traducidoXML);
     return 0;
 }
