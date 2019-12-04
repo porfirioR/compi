@@ -1,22 +1,26 @@
-[
-      {  
-         "ci":"a",
+{
+   "personas":[
+      {
+         "ci":1234567,
          "nombre":"Julio Pérez",
-         "casado":["hola"],
-         "hijos":[}
+         "casado":false,
+         "hijos":[
          ]
-      },
-      {  
-         "ci":"a",
-         "nombre":"Juan Gómez",
-         "casado":null
       },
       {  
          "ci":7654321,
          "nombre":"Juan Gómez",
          "casado":true,
-         "hijos":[}
+         "hijos":[  
+            {  
+               "nombre":"Jorge",
+               "edad":18
+            },
+            {
+               "nombre":"Valeria",
+               "edad":16
+            }
          ]
       }
    ]
-
+}
