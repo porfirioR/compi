@@ -1,0 +1,32 @@
+G = 
+json => element eof
+element => object | array
+array => [element-list] | []
+element-list => element-list , element | element
+object => {attributes-list} | {}
+attributes-list => attribute-list , attribute | attribute
+attribute => attribute-name : attribute-value
+attribute-name => string
+attribute-value => element | string | number | true | false | null
+
+---------------------------------------------------
+	
+---------------------------------------------------
+G' =																                                                 T=
+json 			      => element eof										                  json.trad 			    	=> element.trad eof
+element 	      => object 			| array							                element.trad 		    	=> object.trad		| array.trad
+array			      => [ a'												                      array.trad		    		=> a'.trad
+a'				      => element-list] 	| ]							                  a'.trad				    	  => element-list.trad
+element-list 	  => element e'										                    element-list.trad 		=> <item> element.trad e'.trad
+e' 				      => , element e' 	| E							                  e'.trad 				       => </item> <item> element.trad e'.trad | </item>
+object		    	=> { o'												                      object.trad			    	=> o'.trad
+o'				      => attribute-list}	| }						                  o'.trad					      => attribute-list.trad	| E
+attributes-list => attribute l'										                  attributes-list.trad 	=> attribute.trad l'.trad
+l' 				      => , attribute l'	| E							                  l'.trad 				      => attribute.trad l'.trad	| E
+attribute 		  => attribute-name : attribute-value		              attribute.trad 			  => <attribute-name.trad> attribute-value.trad</attribute-name.trad> 
+attribute-name 	=> string											                      attribute-name.trad 	=> string.sinComilla
+attribute-value => element | string | number | true | false | null	attribute-value.trad 	=> element.trad | string | number | true | false | null
+
+
+
+
